@@ -1,0 +1,76 @@
+{% extends "layouts/base1.html" %}
+
+{% load static %}
+
+{% block title %} Dashboard {% endblock %} 
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+        <div class="content">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-chart">
+                        <div class="card-header ">
+                            <div class="row">
+                                <div class="col-sm-6 text-left">
+                                    <h5 class="card-category">Daily Chart</h5>
+                                    <h2 class="card-title">Downtime</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="gen-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 col-md-3">
+                    <div class="card card-chart">
+                        <div class="card-header ">
+                            <div class="row">
+                                <div class="col-sm-6 text-left">
+                                    <h5 class="card-category">Total per section</h5>
+                                    <h2 class="card-title">Downtime</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="gen-chart2"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-3">
+                    <div class="card card-chart">
+                        <div class="card-header ">
+                            <div class="row">
+                                <div class="col-sm-6 text-left">
+                                    <h5 class="card-category">Machine Breakdown</h5>
+                                    <h2 class="card-title">Top 5</h2>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="gen-chart3"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+
+{% block javascripts %}
+
+{% endblock javascripts %}
+

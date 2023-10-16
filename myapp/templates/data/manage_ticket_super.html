@@ -1,0 +1,69 @@
+<div class="container">
+    <form id="super-form">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{% if ticket.pk %}{{ticket.pk}}{% endif %}">
+        <div class="form-group mb-1">
+            <label for="ticket_id" class="control-label h4 strong col-4" style="padding: 0px;">Ticket ID</label>
+            <input type="text" name="ticket_id" id="ticket_id" class="control-label h4 strong col-4" value="{{ticket.ticket_id}}" required disabled>
+        </div>
+        <div class="form-group mb-1">
+            <label for="name" class="control-label h4 strong col-4" style="padding: 0px;">Name</label>
+            <input type="text" name="name" id="name" class="control-label h4 strong col-7" value="{{ticket.site_name}}" required disabled>
+       
+            <label for="sub_name" class="control-label h4 strong col-4" style="padding: 0px;">Sub Name</label>
+            <input type="text" name="sub_name" id="sub_name" class="control-label h4 strong col-7" value="{{ticket.site_sub_name}}" required disabled>
+        </div>
+        <div class="form-group mb-1">
+            <label for="description" class="control-label h4" style="margin-bottom: 0px;">Description</label>
+            <textarea rows="2" name="description" id="description" class="form-control" disabled>{{ticket.description}} </textarea>
+        </div>
+    </form>
+</div>
+<script>
+    $(function() {
+        $('#super-form').submit(function(e) {
+            e.preventDefault();
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if (_this[0].checkValidity() == false) {
+                _this[0].reportValidity();
+                return false;
+            }
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                url: "{% url 'save_ticket_lead' %}",
+                data: new FormData($(this)[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert_toast("An error occured", 'error');
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        el.removeClass("alert alert-danger err-msg");
+                        location.reload();
+                        alert('success');
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.text(resp.msg)
+                    } else {
+                        el.text("An error occured", 'error');
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal").scrollTop(0);
+                }
+            })
+        })
+    });
+    
+</script>

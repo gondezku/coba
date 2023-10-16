@@ -1,0 +1,73 @@
+<div class="container">
+    <form id="super-form">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{% if ticket.pk %}{{ticket.pk}}{% endif %}">
+        <div class="form-group mb-1">
+            <label for="name" class="control-label h4 strong col-4" style="padding: 0px;">Section</label>
+            <input type="text" name="name" id="name" class="control-label h4 strong col-7" value="{{ticket.site_section}}" required disabled>
+
+            <label for="name" class="control-label h4 strong col-4" style="padding: 0px;">Name</label>
+            <input type="text" name="name" id="name" class="control-label h4 strong col-7" value="{{ticket.site_name}} {{ticket.site_sub_name}}" required disabled>
+        
+            <label for="description" class="control-label h4" style="margin-bottom: 0px;">Description</label>
+            <textarea rows="2" name="description" id="description" class="form-control" disabled>{{ticket.description}} </textarea>
+
+            <label for="action_analisis" class="control-label h4" style="margin-bottom: 0px;">Breakdown Analisis</label>
+            <textarea rows="2" name="action_analisis" id="action_analisis" class="form-control" required></textarea>
+
+            <label for="action_counter" class="control-label h4" style="margin-bottom: 0px;">Countermeasure</label>
+            <textarea rows="2" name="action_counter" id="action_counter" class="form-control" required></textarea>
+
+            <label for="spare_part" class="control-label h4" style="margin-bottom: 0px;">Spare Part Used</label>
+            <textarea rows="2" name="spare_part" id="spare_part" class="form-control"></textarea>
+
+        </div>
+    </form>
+</div>
+<script>
+    $(function() {
+        $('#super-form').submit(function(e) {
+            e.preventDefault();
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if (_this[0].checkValidity() == false) {
+                _this[0].reportValidity();
+                return false;
+            }
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                url: "{% url 'save_eksekusi' %}",
+                data: new FormData($(this)[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert_toast("An error occured", 'error');
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        el.removeClass("alert alert-danger err-msg");
+                        location.reload();
+                        alert('success');
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.text(resp.msg)
+                    } else {
+                        el.text("An error occured", 'error');
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal").scrollTop(0);
+                }
+            })
+        })
+    });
+</script>

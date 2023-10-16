@@ -1,0 +1,148 @@
+{% extends "layouts/base.html" %} 
+
+{% block content %}
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-tasks">
+            <div class="card-header">
+              <h4 class="card-title"> On Progress</h4>
+            </div>
+            <div class="card-body">
+              <div class="table-full-width table-responsive">
+                <table class="table tablesorter ">
+                  <thead class=" text-primary">
+                      <tr>
+                          <th class="text-center py-1">#</th>
+                          <th class="text-center py-1">Time Issue</th>
+                          <th class="text-center py-1">Time approved</th>
+                          <th class="text-center py-1">Act Start</th>
+                          <th class="text-center py-1">Incharge</th>
+                          <th class="text-center py-1">Section</th>
+                          <th class="text-center py-1">Site Name</th>
+                          <th class="text-center py-1">Description</th>
+                          <th class="text-center py-1">Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for cat in ready %}
+                      <tr>
+                          <td class="px-2 py-1 text-center">{{ cat.ticket_id }}</td>
+                          <td class="px-2 py-1 text-start">{{ cat.time_issue }}</td>
+                          <td class="px-2 py-1 text-start">{{ cat.approved }}</td>
+                          <td class="px-2 py-1 text-start">{{ cat.taken }}</td>
+                          <td class="px-2 py-1 text-start">{{ cat.user_name }}</td>
+                          <td class="px-2 py-1 text-start">{{ cat.site_section }}</td>
+                          <td class="px-2 py-1 text-start">{{ cat.site_name }} {{cat.site_sub_name}}</td>
+                          <td class="px-2 py-1 text-start">{{ cat.description }}</td>
+                          <td class="px-2 py-1 text-center">
+                              <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--light mdc-ripple-upgraded action-data" type="button" data-id="{{ cat.id }}" title="Action">
+                                  <i class="fa-solid fa-user-pen"></i>
+                              </button>
+                          </td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        <div class="card card-tasks">
+          <div class="card-header">
+            <h4 class="card-title"> Completed</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-full-width table-responsive">
+              <table class="table tablesorter " id="">
+                <thead class=" text-primary">
+                    <tr>
+                        <th class="text-center py-1">#</th>
+                        <th class="text-center py-1">Section</th>
+                        <th class="text-center py-1">Site Name</th>
+                        <th class="text-center py-1">Trouble</th>
+                        <th class="text-center py-1">Analisis</th>
+                        <th class="text-center py-1">Action</th>
+                        <th class="text-center py-1">Duration</th>
+                        <th class="text-center py-1">Incharge</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in ticket %}
+                    <tr>
+                        <td class="px-2 py-1 text-center">{{ cat.ticket_id }}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.site_section }}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.site_name }} {{cat.site_sub_name}}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.description }}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.reasons }}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.analisis }}</td>                        
+                        <td class="px-2 py-1 text-start">{{ cat.time_finish }}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.user_name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="card card-tasks">
+          <div class="card-header">
+            <h4 class="card-title"> Scheduled</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-full-width table-responsive">
+              <table class="table tablesorter " id="">
+                <thead class=" text-primary">
+                    <tr>
+                        <th class="text-center py-1">#</th>
+                        <th class="text-center py-1">IssuedBy</th>
+                        <th class="text-center py-1">Time Issue</th>
+                        <th class="text-center py-1">Section</th>
+                        <th class="text-center py-1">Site Name</th>
+                        <th class="text-center py-1">Description</th>
+                        <th class="text-center py-1">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in approved %}
+                    <tr>
+                        <td class="px-2 py-1 text-center">{{ cat.ticket_id }}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.user_name }}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.time_issue }}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.site_section }}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.site_name }} {{cat.site_sub_name}}</td>
+                        <td class="px-2 py-1 text-start">{{ cat.description }}</td>
+                        <td class="px-2 py-1 text-center">
+                          <button class="mdc-button mdc-button--raised p-1 icon-button filled-button--light mdc-ripple-upgraded approve-data" type="button" data-id="{{ cat.id }}" title="Approval">
+                              <i class="fa-solid fa-user-pen"></i>
+                          </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE Admin -->
+
+{% block javascripts %}
+<script>
+    $(function(){
+        $('.action-data').click(function() {
+            uni_modal("Task Complete", "{% url 'manage_eksekusi' %}?id=" + $(this).attr('data-id'))
+        })
+        
+    })
+    window.onbeforeunload = function(e) {
+        e.preventDefault();
+        return "Modal should be closed before reloading or something...";
+    }
+
+</script>
+{% endblock javascripts %}

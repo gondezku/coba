@@ -1,0 +1,119 @@
+<div class="container">
+    <form id="super-form">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{% if ticket.pk %}{{ticket.pk}}{% endif %}">
+        <div class="form-group mb-1">
+            <label for="ticket_id" class="control-label h4 strong col-4" style="padding: 0px;">Ticket ID</label>
+            <input type="text" name="ticket_id" id="ticket_id" class="control-label h4 strong col-4" value="{{ticket.ticket_id}}" required disabled>
+        </div>
+        <div class="form-group mb-1">
+            <label for="name" class="control-label h4 strong col-4" style="padding: 0px;">Name</label>
+            <input type="text" name="name" id="name" class="control-label h4 strong col-7" value="{{ticket.site_name}}" required disabled>
+       
+            <label for="sub_name" class="control-label h4 strong col-4" style="padding: 0px;">Sub Name</label>
+            <input type="text" name="sub_name" id="sub_name" class="control-label h4 strong col-7" value="{{ticket.site_sub_name}}" required disabled>
+        </div>
+        <div class="form-group mb-1">
+            <label for="description" class="control-label h4" style="margin-bottom: 0px;">Description</label>
+            <textarea rows="2" name="description" id="description" class="form-control" disabled>{{ticket.description}} </textarea>
+        </div>
+        <div class="form-group mb-1">
+            <label for="action" class="control-label h4" style="margin-bottom: 0px;">Action Taken</label>
+            <textarea rows="2" name="action" id="action" class="form-control" required=""></textarea>
+        </div>
+        <!-- <div class="form-group mb-1"> -->
+            <!-- <label for="kyt_image" class="control-label h4" style="margin-bottom: 0px;">KYT Image</label> -->
+            <!-- <input type="file" id="test" name="test" accept="image/*" class="control-label h4" hidden> -->
+        <!-- </div> -->
+    </form>
+    <label for="kyt_image" class="control-label h4" style="margin-bottom: 0px;">KYT Image</label>
+    <input type="file" id="kyt_image" name="kyt_image" accept="image/*" class="control-label h4">
+</div>
+<script>
+    var kirim = false
+    $(function() {
+        $('#super-form').submit(function(e) {
+            e.preventDefault();
+            if (kirim){
+                var _this = $(this)
+                $('.err-msg').remove();
+                var el = $('<div>')
+                el.addClass("alert alert-danger err-msg")
+                el.hide()
+                if (_this[0].checkValidity() == false) {
+                    _this[0].reportValidity();
+                    return false;
+                }
+                dataku = new FormData($(this)[0]);
+                commpress(el,_this);
+            }
+        })
+        $('#kyt_image').change(function() {
+            kirim = true
+        })
+    });
+
+    function commpress(el,_this){
+        // var canvas = document.createElement('canvas')
+        // var canvasContext = canvas.getContext('2d')
+        var fileToUpload = $('#kyt_image').prop('files')[0];
+        // canvas.setAttribute("style", 'opacity:0;position:absolute;z-index:-1;top: -100000000;left:-1000000000;width:320px;height:240px;')
+        // document.body.appendChild(canvas);
+        
+        var img = new Image;
+        img.onload = function() {
+            var canvas = document.createElement('canvas')
+            var perferedWidth = 800;
+            var ratio = perferedWidth / img.width;
+            canvas.width = img.width * ratio;
+            canvas.height = img.height * ratio;
+            var canvasContext = canvas.getContext('2d')
+            canvas.setAttribute("style", 'opacity:0;position:absolute;z-index:-1;top: -100000000;left:-1000000000;width:320px;height:240px;')
+            document.body.appendChild(canvas);
+            canvasContext.drawImage(img, 0, 0, canvas.width, canvas.height);
+                var base64Image= canvas.toDataURL('image/png')
+            // Post to server
+            // sendImage(base64Image)
+            dataku.append("uploadfile", base64Image);
+
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                url: "{% url 'save_permohonan_perbaikan' %}",
+                data: dataku,
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert("An error occured", 'error');
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        el.removeClass("alert alert-danger err-msg");
+                        location.reload();
+                        alert('success');
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.text(resp.msg)
+                    } else {
+                        el.text("An error occured", 'error');
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal").scrollTop(0);
+                }
+            })
+
+
+            document.body.removeChild(canvas)
+            URL.revokeObjectURL(img.src)
+
+        }
+        // console.log(fileToUpload);
+        img.src = URL.createObjectURL(fileToUpload);
+    };
+</script>

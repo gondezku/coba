@@ -1,0 +1,210 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webleb</title>
+    <link rel="stylesheet" href="{% static 'assets/default/css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/default/css/css_all.min.css' %}">
+  </head>
+  <body style="display:flex; align-items:center; justify-content:center;">
+  <div class="login-page">
+    <div class="form">
+      
+      <form id="register-user" class="register-form">
+        {% csrf_token %}
+        <h2 style="display:flex; align-items:center;">Register</h2>
+        <div class="did-floating-label-content">
+          <input class="did-floating-input" type="text" placeholder="" name="reg_fullname" required>
+          <label class="did-floating-label">FullName</label>
+        </div>
+        <div class="did-floating-label-content">
+          <input class="did-floating-input" type="text" placeholder="" name="reg_username" required>
+          <label class="did-floating-label">UserName</label>
+        </div>
+        <div class="did-floating-label-content">
+          <input class="did-floating-input" type="email" placeholder="" name="reg_email" required>
+          <label class="did-floating-label">Email</label>
+        </div>
+        <div class="did-floating-label-content">
+          <select class="did-floating-select" onclick="this.setAttribute('value', this.value);" onchange="this.setAttribute('value', this.value);" value="" name="reg_section" required>
+            <option value=""></option>
+            {% for i in test42 %} 
+              <option value ="{{ i }}">{{ i }}</option> 
+            {% endfor %} 
+          </select>
+          <label class="did-floating-label">Section</label>
+        </div>
+        <div class="did-floating-label-content">
+          <input id="password-field1" class="did-floating-input" type="password" placeholder="" name="reg_password" required>
+          <label class="did-floating-label">Retype Password</label>
+          <span class="far fa-eye" id="togglePassword1" class="far fa-eye" style="cursor: pointer;"></span>
+        </div>
+        <div class="did-floating-label-content">
+          <input id="password-field2" class="did-floating-input" type="password" placeholder="" name="reg_re-password" required>
+          <label class="did-floating-label">Retype Password</label>
+          <span class="far fa-eye" id="togglePassword2" class="far fa-eye" style="cursor: pointer;"></span>
+        </div>
+        <button type="submit" class="btn">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          Daftar
+        </button>
+        <p class="message">Sudah terdaftar? <a href="#">Masuk</a></p>
+      </form>
+      <form id="login-user" class="login-form" >
+        {% csrf_token %}
+        <h2 style="display:flex; align-items:center; margin-bottom: 0px;"> Login</h2>
+        <h6 style="display:flex; align-items:center; margin-top: 5px; margin-bottom: 15px;"> Silakan login untuk menggunakan</h6>
+        <div class="did-floating-label-content">
+          <input class="did-floating-input" type="text" placeholder="" name="username">
+          <label class="did-floating-label">Username</label>
+        </div>
+        <div class="did-floating-label-content">
+          <input id="password-field" class="did-floating-input" type="password" placeholder="" name="password">
+          <label class="did-floating-label">Password</label>
+          <span class="far fa-eye" id="togglePassword" class="far fa-eye" style="cursor: pointer;"></span>
+        </div>
+        <button type="submit" class="btn">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          Masuk
+        </button>
+        <p class="message">Belum terdaftar? <a href="#">Daftar</a></p>
+      </form>
+    </div>
+    <div id="myModal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <p id="resp_msg">Some text in the Modal..</p>
+      </div>
+    
+    </div>
+  </div>
+
+  <script src="{% static 'assets/default/js/jquery-3.6.0.min.js' %}"></script>
+  <script src="{% static 'assets/default/js/main.js' %}"></script>
+  <script src="{% static 'assets/default/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'assets/default/js/popper.min.js' %}"></script>
+
+  <script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password-field');
+    const togglePassword1 = document.querySelector('#togglePassword1');
+    const password1 = document.querySelector('#password-field1');
+    const togglePassword2 = document.querySelector('#togglePassword2');
+    const password2 = document.querySelector('#password-field2');
+
+    togglePassword.addEventListener('click', function (e) {
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+      this.classList.toggle('fa-eye-slash');
+    });
+    togglePassword1.addEventListener('click', function (e) {
+      const type = password1.getAttribute('type') === 'password' ? 'text' : 'password';
+      password1.setAttribute('type', type);
+      this.classList.toggle('fa-eye-slash');
+    });
+    togglePassword2.addEventListener('click', function (e) {
+      const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
+      password2.setAttribute('type', type);
+      this.classList.toggle('fa-eye-slash');
+    });
+    
+   
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+    
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    $(function() {
+      $('#login-user').submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+          headers: {
+              "X-CSRFToken": '{{csrf_token}}'
+          },
+          url: "{% url 'login-user' %}",
+          data: new FormData($(this)[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          method: 'POST',
+          type: 'POST',
+          dataType: 'json',
+          error: err => {
+            console.log(err)
+            alert("An error occured", 'error');
+          },
+          success: function(resp) {
+            const resp_msg = document.getElementById('resp_msg');
+            if (typeof resp == 'object' && resp.status == 'success') {
+                location.href = "{% url '' %}"
+            } else if (resp.status == 'failed' && !!resp.msg) {
+              resp_msg.textContent = resp.msg;
+              modal.style.display = "block"; 
+            } else {
+              resp_msg.textContent = 'An error occured';
+              modal.style.display = "block"; 
+              // end_loader();
+            }
+          }
+        })
+      });
+      $('#register-user').submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+          headers: {
+              "X-CSRFToken": '{{csrf_token}}'
+          },
+          url: "{% url 'register-user' %}",
+          data: new FormData($(this)[0]),
+          cache: false,
+          contentType: false,
+          processData: false,
+          method: 'POST',
+          type: 'POST',
+          dataType: 'json',
+          error: err => {
+            console.log(err)
+            alert("An error occured", 'error');
+          },
+          success: function(resp) {
+            const resp_msg = document.getElementById('resp_msg');
+            if (typeof resp == 'object' && resp.status == 'success') {
+              alert('User Berhasil Dibuat');
+              location.href = "{% url '' %}"
+              
+            } else if (resp.status == 'failed' && !!resp.msg) {
+              resp_msg.textContent = resp.msg;
+              modal.style.display = "block"; 
+            } else {
+              resp_msg.textContent = 'An error occured';
+              modal.style.display = "block"; 
+              // end_loader();
+            }
+          }
+        })
+      })
+    })
+  </script>
+  
+  </body>
+</html>

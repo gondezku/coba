@@ -1,0 +1,72 @@
+{% extends "layouts/base.html" %} 
+
+{% block content %}
+        <div class="content">
+            <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+                <div class="mdc-card py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title mb-0">Permintaan Perbaikan</h4>
+                        <div class="text-start">
+                            <button class="btn btn-primary bg-gradient btn-sm rounded-0" id="create_new"><i class="mdi mdi-plus"></i><span> Add New</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+                <div class="mdc-card">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered">
+                            <colgroup>
+                                <col width="5%">
+                                <col width="5%">
+                                <col width="20%"
+                                <col width="20%">
+                                <col width="30%">
+                                <col width="20%">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th class="text-center py-1">#</th>
+                                    <th class="text-center py-1">IssuedBy</th>
+                                    <th class="text-center py-1">Time Issue</th>
+                                    <th class="text-center py-1">Site Name</th>
+                                    <th class="text-center py-1">Description</th>
+                                    <th class="text-center py-1">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cat in ticket %}
+                                <tr>
+                                    <td class="px-2 py-1 text-center">{{ cat.ticket_id }}</td>
+                                    <td class="px-2 py-1 text-start">{{ cat.user_name }}</td>
+                                    <td class="px-2 py-1 text-start">{{ cat.time_issue }}</td>
+                                    <td class="px-2 py-1 text-start">{{ cat.site_name }} {{cat.site_sub_name}}</td>
+                                    <td class="px-2 py-1 text-start">{{ cat.description }}</td>
+                                    <td class="px-2 py-1 text-start">{{ cat.status }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE Admin -->
+
+{% block javascripts %}
+<script>
+    $(function() {
+        $('#create_new').click(function() {
+            uni_modal("Permintaan Perbaikan", "{% url 'manage_ticket' %}")
+        })
+    })
+    window.onbeforeunload = function(e) {
+        e.preventDefault();
+        return "Modal should be closed before reloading or something...";
+    }
+
+</script>
+{% endblock javascripts %}

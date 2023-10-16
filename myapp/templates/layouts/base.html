@@ -1,0 +1,138 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="refresh" content="30">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ ASSETS_ROOT }}/img/apple-icon.png">
+    <link rel="icon" type="image/png" href="{{ ASSETS_ROOT }}/img/favicon.png">
+
+    <title>
+        Water Pump Production Engineering - {% block title %}{% endblock %} | Permohonan Perbaikan
+    </title>
+
+    <!--     Fonts and icons     -->
+    <link rel="stylesheet" href="{% static 'assets/default/css/poppins.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/default/css/all.min.css' %}">
+    <!-- Nucleo Icons -->
+    <!-- <link rel="stylesheet" href="{% static 'assets/default/css/nucleo-icons.css' %}"> -->
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="{% static 'assets/default/css/black-dashboard.css' %}">
+    
+
+    <!-- Specific Page CSS goes HERE  -->
+    {% block stylesheets %}{% endblock stylesheets %}
+        
+</head>
+<body class="white-content">
+    <div class="wrapper">
+
+        {% include 'includes/sidebar.html' %}
+
+        <div class="main-panel">
+
+            {% include 'includes/navigation.html' %}
+
+            {% block content %}{% endblock content %}
+
+        </div>
+
+    </div>
+    <div class="modal fade mt-0" id="uni_modal" role='dialog'>
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content rounded-0"> 
+                <div class="modal-header">
+                    <h3 class="modal-title"></h3>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn  btn-sm btn-flat btn-primary rounded-0" id='submit' onclick="$('#uni_modal form').submit()">Save</button>
+                    <button type="button" class="btn btn-sm btn-flat btn-secondary rounded-0" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="confirm_modal" role='dialog'>
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content rounded-0">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="delete_content"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-flat btn-primary rounded-0" id='confirm' onclick="">Continue</button>
+                    <button type="button" class="btn btn-sm btn-flat btn-secondary rounded-0" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+   
+        window.start_loader = function() {
+            $('body').removeClass('loaded')
+        }
+        window.end_loader = function() {
+            $('body').addClass('loaded')
+        }
+        window.uni_modal = function($title = '', $url = '', $size = "") {
+            start_loader()
+            $.ajax({
+                url: $url,
+                error: err => {
+                    console.log()
+                    alert("An error occured")
+                },
+                success: function(resp) {
+                    if (resp) {
+                        $('#uni_modal .modal-title').html($title)
+                        $('#uni_modal .modal-body').html(resp)
+                        if ($size != '') {
+                            $('#uni_modal .modal-dialog').addClass($size)
+                        } else {
+                            $('#uni_modal .modal-dialog').removeAttr("class").addClass("modal-dialog modal-md")
+                        }
+                        $('#uni_modal').modal({
+                            backdrop: 'static',
+                            keyboard: false,
+                            focus: true
+                        })
+                        $('#uni_modal').modal('show')
+                        $('#uni_modal').scrollTop(0)
+                        end_loader()
+                    }
+                }
+            })
+        }
+        window._conf = function($msg = '', $func = '', $params = []) {
+            $('#confirm_modal #confirm').attr('onclick', $func + "(" + $params.join(',') + ")")
+            $('#confirm_modal .modal-body').html($msg)
+            $('#confirm_modal').modal('show')
+        }
+
+        
+    </script>
+
+    {% include 'includes/scripts.html' %}
+
+    <!-- Specific Page JS goes HERE  -->
+
+    <script>
+        // $(document).ready(function () {
+        //     var current_path = window.location.pathname.split('/').pop();
+        //     if (current_path == 'dashboard_all'){
+        //         overall();
+        //     }
+        // })
+    </script>
+
+    {% block javascripts %}{% endblock javascripts %}
+
+</body>
+</html>

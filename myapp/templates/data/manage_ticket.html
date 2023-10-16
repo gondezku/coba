@@ -1,0 +1,141 @@
+<div class="container">
+    <form id="sites-form">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{% if category.pk %}{{category.pk}}{% endif %}">
+        <div class="did-floating-label-content">
+            <select id="nameId" name="name" class="did-floating-select" onclick="this.setAttribute('value', this.value);" onchange="this.setAttribute('value', this.value);" value="" required>
+              <option value=""></option>
+              {% for i in sites %} 
+                <option value ="{{ i }}">{{ i }}</option>
+              {% endfor %} 
+            </select>
+            <label class="did-floating-label">Site Name</label>
+        </div>
+        <div class="did-floating-label-content">
+            <select id="sub_nameId" name="sub_name" class="did-floating-select" onclick="this.setAttribute('value', this.value);" onchange="this.setAttribute('value', this.value);" disabled required>
+              <option value=""></option>
+              <!-- {% for i in sites %} 
+                <option value ="{{ i.sub_name }}">{{ i.sub_name }}</option>
+              {% endfor %}  -->
+            </select>
+            <label class="did-floating-label">Sub Name</label>
+        </div>
+        <div class="form-group mb-1">
+            <label for="description" class="control-label h4" style="margin-bottom: 0px;">Description</label>
+            <textarea rows="2" name="description" id="description" class="form-control" required></textarea>
+        </div>
+    </form>
+</div>
+<script>
+    $(function() {
+        $('#sites-form').submit(function(e) {
+            e.preventDefault();
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg")
+            el.hide()
+            if (_this[0].checkValidity() == false) {
+                _this[0].reportValidity();
+                return false;
+            }
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                url: "{% url 'save_ticket_lead' %}",
+                data: new FormData($(this)[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert_toast("An error occured", 'error');
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        el.removeClass("alert alert-danger err-msg");
+                        location.reload();
+                        alert('success');
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.text(resp.msg)
+                    } else {
+                        el.text("An error occured", 'error');
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal").scrollTop(0);
+                }
+            })
+        })
+    });
+    $('#nameId').change(function(e){
+        e.preventDefault();
+        var _this = $(this)
+        $('.err-msg').remove();
+        var el = $('<div>')
+        el.addClass("alert alert-danger err-msg")
+        el.hide()
+        if (_this[0].checkValidity() == false) {
+            _this[0].reportValidity();
+            return false;
+        }
+
+        var $option = $(this).find('option:selected');
+        var text = $option.text()
+        var x = document.getElementById("sub_nameId");
+        
+        var options = document.querySelectorAll('#sub_nameId option');
+        
+        const frmData = new FormData();
+        frmData.append('site_name', text);
+        if (text != ''){
+            $.ajax({
+                headers: {
+                    "X-CSRFToken": '{{csrf_token}}'
+                },
+                url: "{% url 'load_combo' %}",
+                data: frmData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert_toast("An error occured", 'error');
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        // alert((resp.msg).length);
+                        options.forEach(o => o.remove());
+                        for (let i = 0; i < (resp.msg).length; i++) {
+                            // alert(resp.msg[i]);
+                            var option = document.createElement("option");
+                            option.text = resp.msg[i];
+                            option.value = resp.msg[i];
+                            x.add(option);
+                        }
+                        document.getElementById('sub_nameId').disabled = false;
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.text(resp.msg)
+                    } else {
+                        el.text("An error occured", 'error');
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal").scrollTop(0);
+                }
+            })
+            
+        }
+        else{
+            document.getElementById('sub_nameId').disabled = true;
+        }
+
+    })
+</script>
